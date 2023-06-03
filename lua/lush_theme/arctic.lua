@@ -546,7 +546,7 @@ local theme = lush(function(injected_functions)
     --
     -- Telescope
     --
-    TelescopeBorder { FloatBorder },
+    TelescopeBorder { PeekViewBorder },
     TelescopePromptBorder { TelescopeBorder },
     TelescopeResultsBorder { TelescopePromptBorder },
     TelescopePreviewBorder { TelescopePromptBorder },
