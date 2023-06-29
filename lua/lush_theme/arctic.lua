@@ -3,8 +3,18 @@
 
 local lush = require('lush')
 
+-- Load configs
+local config = vim.g.arctic_config
+local transparent = config.transparent
+
 local norm_fg = '#cccccc'
 local norm_bg = '#121111'
+
+-- If transparent config enabled set bg to NONE
+if transparent
+then
+   norm_bg = 'NONE'
+end
 
 local light_red = '#D16969'
 local orange = '#f9ae28'
