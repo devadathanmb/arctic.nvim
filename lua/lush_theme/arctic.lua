@@ -52,7 +52,7 @@ local selection_blue = '#04395e'
 local folded_blue = '#212d3a' -- editor.foldBackground
 local float_border_fg = '#454545'
 local indent_guide_fg = '#404040'
-local indent_guide_context_fg = '#707070'
+local indent_guide_scope_fg = '#707070'
 local label_fg = '#c8c8c8'
 
 ---@diagnostic disable
@@ -302,7 +302,7 @@ local theme = lush(function(injected_functions)
     -- sym("@float") { },
 
     -- Function
-    -- sym("@function") { },
+    sym("@function") { Function },
     sym("@function.builtin") { Function },
     sym("@function.call") { Function },
     sym("@function.macro") { Function },
@@ -338,7 +338,7 @@ local theme = lush(function(injected_functions)
     -- Identifiers
     sym("@variable") { fg = light_blue },
     sym("@variable.builtin") { fg = dark_blue },
-    -- sym("@constant") { },
+    sym("@constant") { Constant },
     sym("@constant.builtin") { Constant },
     sym("@constant.macro") { Constant },
     sym("@namespace") { fg = blue_green },
@@ -411,17 +411,26 @@ local theme = lush(function(injected_functions)
     sym("@lsp.type.builtinType") { fg = dark_blue },
     sym("@lsp.type.typeAlias") { fg = blue_green },
     sym("@lsp.type.unresolvedReference") { gui = 'undercurl', sp = error_red },
+    sym("@lsp.type.lifetime") { sym("@storageclass") },
+    sym("@lsp.type.generic") { sym("@variable") },
+    sym("@lsp.type.selfTypeKeyword") { sym("@variable.builtin") },
+    sym("@lsp.type.deriveHelper") { sym("@attribute") },
     sym("@lsp.typemod.type.defaultLibrary") { fg = blue_green },
+    sym("@lsp.typemod.typeAlias.defaultLibrary") { sym("@lsp.typemod.type.defaultLibrary") },
     sym("@lsp.typemod.class.defaultLibrary") { fg = blue_green },
     sym("@lsp.typemod.variable.defaultLibrary") { fg = dark_blue },
     sym("@lsp.typemod.function.defaultLibrary") { Function },
     sym("@lsp.typemod.method.defaultLibrary") { Function },
     sym("@lsp.typemod.macro.defaultLibrary") { Function },
+    sym("@lsp.typemod.struct.defaultLibrary") { sym("@type.builtin") },
     -- sym("@lsp.typemod.enum.defaultLibrary") {},
     -- sym("@lsp.typemod.enumMember.defaultLibrary") {},
     sym("@lsp.typemod.variable.readonly") { fg = blue },
+    sym("@lsp.typemod.variable.callable") { sym("@function") },
+    sym("@lsp.typemod.variable.static") { sym("@constant") },
     sym("@lsp.typemod.property.readonly") { fg = blue },
     sym("@lsp.typemod.keyword.async") { fg = dark_pink },
+    sym("@lsp.typemod.keyword.injected") { sym("@keyword") },
     -- Set injected highlights. Mainly for Rust doc comments and also works for
     -- other lsps that inject tokens in comments.
     -- Ref: https://github.com/folke/tokyonight.nvim/pull/340
@@ -587,12 +596,8 @@ local theme = lush(function(injected_functions)
     --
     -- indent-blankline
     --
-    IndentBlanklineChar { fg = indent_guide_fg },
-    IndentBlanklineSpaceChar { IndentBlanklineChar },
-    IndentBlanklineSpaceCharBlankline { IndentBlanklineChar },
-    IndentBlanklineContextChar { fg = indent_guide_context_fg },
-    IndentBlanklineContextSpaceChar { IndentBlanklineContextChar },
-    IndentBlanklineContextStart { gui = 'underline', sp = indent_guide_context_fg },
+    IblIndent { fg = indent_guide_fg },
+    IblScope { fg = indent_guide_scope_fg },
 
     --
     -- hlslens
