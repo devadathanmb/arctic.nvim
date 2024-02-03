@@ -28,6 +28,7 @@ local blue = '#4fc1ff'
 local blue2 = '#2aaaff'
 local light_blue = '#9CDCFE'
 local dark_blue = '#569CD6'
+local cornflower_blue = '#6796E6'
 local dark_pink = '#C586C0'
 local bright_pink = '#f92672'
 local purple = '#ae81ff'
@@ -231,7 +232,7 @@ local theme = lush(function(injected_functions)
     LspReferenceRead { SelectionHighlightBackground },
     LspReferenceWrite { SelectionHighlightBackground },
     LspCodeLens { CodeLens },
-    -- LspCodeLensSeparator { }, -- Used to color the seperator between two or more code lens.
+    -- LspCodeLensSeparator { }, -- Used to color the separator between two or more code lens.
     LspSignatureActiveParameter { MatchedCharacters },
     LspInlayHint { InlayHint },
 
@@ -266,116 +267,130 @@ local theme = lush(function(injected_functions)
     DiagnosticUnnecessary { UnnecessaryCode, gui = 'undercurl' },
     DiagnosticDeprecated { fg = gray3, gui = 'strikethrough' },
 
-    --
     -- Treesitter
     --
-    -- The obsolete TS* highlight groups are removed since this commit
-    -- https://github.com/nvim-treesitter/nvim-treesitter/commit/42ab95d5e11f247c6f0c8f5181b02e816caa4a4f
-    -- Now use the capture names directly as the highlight groups.
-    -- (1). How to define the highlight group, see https://github.com/rktjmp/lush.nvim/issues/109
-    -- (2). To find all the capture names, see https://github.com/nvim-treesitter/nvim-treesitter/blob/master/CONTRIBUTING.md#highlights)
-
-    -- Misc
-    sym("@comment") { Comment },
-    sym("@comment.documentation") { sym("@comment") },
-    sym("@error") { fg = error_red },
-    -- sym("@none") { },
-    -- sym("@preproc") { },
-    -- sym("@define") { },
-    sym("@operator") { fg = norm_fg },
-
-    -- Punctuation
-    sym("@punctuation.delimiter") { fg = norm_fg },
-    sym("@punctuation.bracket") { fg = norm_fg },
-    sym("@punctuation.special") { fg = dark_blue },
-
-    -- Literals
-    -- sym("@string") { },
-    sym("@string.documentation") { fg = brown },
-    sym("@string.regex") { fg = dark_red },
-    sym("@string.escape") { fg = yellow_orange },
-    -- sym("@string.special") { },
-    -- sym("@character") { },
-    -- sym("@character.special") { },
-    -- sym("@boolean") { },
-    -- sym("@number") { },
-    -- sym("@float") { },
-
-    -- Function
-    sym("@function") { Function },
-    sym("@function.builtin") { Function },
-    sym("@function.call") { Function },
-    sym("@function.macro") { Function },
-    -- sym("@method") { },
-    -- sym("@method.call") { },
-    sym("@constructor") { fg = blue_green },
-    sym("@parameter") { fg = light_blue },
-
-    -- Keyword
-    sym("@keyword") { Keyword },
-    sym("@keyword.coroutine") { fg = dark_pink },
-    sym("@keyword.function") { fg = dark_blue },
-    sym("@keyword.operator") { fg = norm_fg },
-    sym("@keyword.return") { fg = dark_pink },
-    -- sym("@conditional") { },
-    -- sym("@conditional.ternary") { },
-    -- sym("@repeat") { },
-    -- sym("@debug") { },
-    sym("@label") { fg = label_fg },
-    -- sym("@include") { },
-    -- sym("@exception") { },
-
-    -- Types
-    sym("@type") { fg = blue_green },
-    sym("@type.builtin") { fg = dark_blue },
-    sym("@type.definition") { fg = blue_green },
-    sym("@type.qualifier") { fg = dark_blue },
-    sym("@storageclass") { fg = dark_blue },
-    sym("@attribute") { fg = blue_green },
-    sym("@field") { fg = light_blue },
-    sym("@property") { sym("@field") },
+    -- Use the capture names directly as the highlight groups.
+    -- To find all the capture names, see https://github.com/nvim-treesitter/nvim-treesitter/blob/master/CONTRIBUTING.md#highlights)
 
     -- Identifiers
-    sym("@variable") { fg = light_blue },
-    sym("@variable.builtin") { fg = dark_blue },
-    sym("@constant") { Constant },
-    sym("@constant.builtin") { Constant },
-    sym("@constant.macro") { Constant },
-    sym("@namespace") { fg = blue_green },
-    -- sym("@symbol") { },
+    sym("@variable") { fg = light_blue }, -- various variable names
+    sym("@variable.builtin") { fg = dark_blue }, -- built-in variable names (e.g. `this`)
+    sym("@variable.parameter") { fg = orange }, -- parameters of a function, use a conspicuous color (VSCode uses the common light_blue)
+    sym("@variable.member") { fg = light_blue }, -- object and struct fields
 
-    -- Text (Mainly for markup languages)
-    sym("@text") { fg = norm_fg },
-    sym("@text.strong") { fg = norm_fg, gui = 'bold' },
-    sym("@text.emphasis") { fg = norm_fg, gui = 'italic' },
-    sym("@text.underline") { fg = norm_fg, gui = 'underline' },
-    sym("@text.strike") { fg = norm_fg, gui = 'strikethrough' },
-    sym("@text.title") { Title, gui = 'bold' },
-    sym("@text.literal") { fg = brown },
-    -- sym("@text.quote") { },
-    sym("@text.uri") { Tag },
-    sym("@text.math") { fg = blue_green },
-    -- sym("@text.environment") { },
-    -- sym("@text.environment.name") { },
-    sym("@text.reference") { fg = brown },
-    sym("@text.todo") { Todo },
-    sym("@text.note") { fg = info_blue },
-    sym("@text.warning") { fg = warn_yellow },
-    sym("@text.danger") { fg = error_red },
-    sym("@text.diff.add") { DiffTextAdded },
-    sym("@text.diff.delete") { DiffTextDeleted },
+    sym("@constant") { Constant }, -- constant identifiers
+    sym("@constant.builtin") { Constant }, -- built-in constant values
+    sym("@constant.macro") { Constant }, -- constants defined by the preprocessor
 
-    -- Tags
-    sym("@tag") { fg = dark_blue },
-    sym("@tag.attribute") { fg = light_blue },
-    sym("@tag.delimiter") { fg = gray3 },
+    sym("@module") { fg = blue_green }, -- modules or namespaces
+    sym("@module.builtin") { sym("@module") }, -- built-in modules or namespaces
+    sym("@label") { fg = label_fg }, -- GOTO and other labels (e.g. `label:` in C), including heredoc labels
 
-    -- Conceal
-    -- sym("@conceal") { },
+    -- Literals
+    sym("@string") { String }, -- string literals
+    sym("@string.documentation") { fg = brown }, -- string documenting code (e.g. Python docstrings)
+    sym("@string.regexp") { fg = dark_red }, -- regular expressions
+    sym("@string.escape") { fg = yellow_orange }, -- escape sequences
+    sym("@string.special") { SpecialChar }, -- other special strings (e.g. dates)
+    sym("@string.special.symbol") { sym("@string.special") }, -- symbols or atoms
+    sym("@string.special.url") { sym("@string.special") }, -- URIs (e.g. hyperlinks), it's url outside markup
+    sym("@string.special.path") { sym("@string.special") }, -- filenames
 
-    -- Spell
-    -- sym("@spell") { },
-    -- sym("@nospell") { },
+    sym("@character") { Character }, -- character literals
+    sym("@character.special") { SpecialChar }, -- special characters (e.g. wildcards)
+
+    sym("@boolean") { Boolean }, -- boolean literals
+    sym("@number")  { Number }, -- numeric literals
+    sym("@number.float") { Float }, -- floating-point number literals
+
+    -- Types
+    sym("@type") { fg = blue_green }, -- type or class definitions and annotations
+    sym("@type.builtin") { fg = dark_blue }, -- built-in types
+    sym("@type.definition") { fg = blue_green }, -- identifiers in type definitions (e.g. `typedef <type> <identifier>` in C)
+    sym("@type.qualifier") { fg = dark_blue }, -- type qualifiers (e.g. `const`)
+
+    sym("@attribute") { fg = blue_green }, -- attribute annotations (e.g. Python decorators)
+    sym("@property") { sym("@variable.member") }, -- the key in key/value pairs
+
+    -- Function
+    sym("@function") { Function }, -- function definitions
+    sym("@function.builtin") { Function }, -- built-in functions
+    sym("@function.call") { Function }, -- function calls
+    sym("@function.macro") { Function }, -- preprocessor macros
+
+    sym("@function.method") { sym("@function") }, -- method definitions
+    sym("@function.method.call") { sym("@function.call") }, -- method calls
+
+    sym("@constructor") { fg = blue_green }, -- constructor calls and definitions
+    sym("@operator") { Operator }, -- symbolic operators (e.g. `+` / `*`)
+
+    -- Keyword
+    sym("@keyword") { Keyword }, -- keywords not fitting into specific categories
+    sym("@keyword.coroutine") { fg = dark_pink }, -- keywords related to coroutines (e.g. `go` in Go, `async/await` in Python)
+    sym("@keyword.function") { fg = dark_blue }, -- keywords that define a function (e.g. `func` in Go, `def` in Python)
+    sym("@keyword.operator") { sym("@operator") }, -- operators that are English words (e.g. `and` / `or`)
+    sym("@keyword.import") { Include }, -- keywords for including modules (e.g. `import` / `from` in Python)
+    sym("@keyword.storage") { StorageClass }, -- modifiers that affect storage in memory or life-time
+    sym("@keyword.repeat") { Repeat }, -- keywords related to loops (e.g. `for` / `while`)
+    sym("@keyword.return") { fg = dark_pink }, --  keywords like `return` and `yield`
+    sym("@keyword.debug") { Debug }, -- keywords related to debugging
+    sym("@keyword.exception") { Exception }, -- keywords related to exceptions (e.g. `throw` / `catch`)
+
+    sym("@keyword.conditional") { Conditional }, -- keywords related to conditionals (e.g. `if` / `else`)
+    sym("@keyword.conditional.ternary") { sym("@operator") }, -- ternary operator (e.g. `?` / `:`)
+
+    sym("@keyword.directive") { PreProc }, -- various preprocessor directives & shebangs
+    sym("@keyword.directive.define") { sym("@keyword.directive") }, -- preprocessor definition directives
+
+    -- Punctuation
+    sym("@punctuation.delimiter") { fg = norm_fg }, -- delimiters (e.g. `;` / `.` / `,`)
+    sym("@punctuation.bracket") { fg = norm_fg }, -- brackets (e.g. `()` / `{}` / `[]`)
+    sym("@punctuation.special") { fg = dark_blue }, -- special symbols (e.g. `{}` in string interpolation)
+
+    -- Comments
+    sym("@comment") { Comment }, -- line and block comments
+    sym("@comment.documentation") { sym("@comment") }, -- comments documenting code
+
+    sym("@comment.error") { fg = error_red }, -- error-type comments (e.g., `DEPRECATED:`)
+    sym("@comment.warning") { fg = warn_yellow }, -- warning-type comments (e.g., `WARNING:`, `FIX:`)
+    sym("@comment.hint") { fg = hint_gray },  -- note-type comments (e.g., `NOTE:`)
+    sym("@comment.info") { fg = info_blue }, -- info-type comments
+    sym("@comment.todo") { Todo }, -- todo-type comments (e.g-, `TODO:`, `WIP:`)
+
+    -- Markup
+    sym("@markup.strong") { fg = norm_fg, gui = 'bold' }, -- bold text
+    sym("@markup.italic") { fg = norm_fg, gui = 'italic' }, -- text with emphasis
+    sym("@markup.strikethrough") { fg = norm_fg, gui = 'strikethrough' }, -- strikethrough text
+    sym("@markup.underline") { fg = norm_fg, gui = 'underline' }, -- underlined text (only for literal underline markup!)
+
+    sym("@markup.heading") { Title }, -- headings, titles (including markers)
+
+    sym("@markup.quote") { fg = green }, -- block quotes
+    sym("@markup.math") { fg = blue_green }, -- math environments (e.g. `$ ... $` in LaTeX)
+    sym("@markup.environment") { fg = yellow }, -- environments (e.g. in LaTeX)
+
+    sym("@markup.link") { fg = brown }, -- text references, footnotes, citations, etc.
+    sym("@markup.link.label") { sym("@markup.link") }, -- non-url links
+    sym("@markup.link.url") { sym("@markup.link") }, -- url links in markup
+
+    sym("@markup.raw") { fg = brown }, -- literal or verbatim text (e.g., inline code)
+    sym("@markup.raw.block") { fg = norm_fg }, -- literal or verbatim text as a stand-alone block
+
+    sym("@markup.list") { fg = cornflower_blue }, -- list markers
+    -- sym("@markup.list.checked") { }, -- checked todo-style list markers
+    -- sym("@markup.list.unchecked") { }, -- unchecked todo-style list markers
+
+    sym("@diff.plus") { DiffTextAdded }, -- added text (for diff files)
+    sym("@diff.minus") { DiffTextDeleted }, -- deleted text (for diff files)
+    sym("@diff.delta") { DiffTextChanged }, -- changed text (for diff files)
+
+    sym("@tag") { fg = dark_blue }, -- XML tag names
+    sym("@tag.attribute") { fg = light_blue }, -- XML tag attributes
+    sym("@tag.delimiter") { fg = gray3 }, -- XML tag delimiters
+
+    -- Language specific
+    -- Lua
+    sym("@variable.member.lua") { fg = blue_green },
 
     --
     -- LSP semantic tokens
@@ -383,60 +398,64 @@ local theme = lush(function(injected_functions)
     -- The help page :h lsp-semantic-highlight
     -- A short guide: https://gist.github.com/swarn/fb37d9eefe1bc616c2a7e476c0bc0316
     -- Token types and modifiers are described here: http://code.visualstudio.com/api/language-extensions/semantic-highlight-guide
-    sym("@lsp.type.namespace") { fg = blue_green },
-    sym("@lsp.type.type") { fg = blue_green },
-    sym("@lsp.type.class") { fg = blue_green },
-    sym("@lsp.type.enum") { fg = blue_green },
-    sym("@lsp.type.interface") { fg = blue_green },
-    sym("@lsp.type.struct") { fg = blue_green },
-    sym("@lsp.type.typeParameter") { fg = blue_green },
-    sym("@lsp.type.parameter") { fg = orange }, -- Use a conspicuous color for semantic parameters (VSCode uses the common light_blue)
-    sym("@lsp.type.variable") { fg = light_blue },
-    sym("@lsp.type.property") { fg = light_blue },
+    sym("@lsp.type.namespace") { sym("@module") },
+    sym("@lsp.type.type") { sym("@type") },
+    sym("@lsp.type.class") { sym("@type") },
+    sym("@lsp.type.enum") { sym("@type") },
+    sym("@lsp.type.interface") { sym("@type") },
+    sym("@lsp.type.struct") { sym("@type") },
+    sym("@lsp.type.typeParameter") { sym("@type.definition") },
+    sym("@lsp.type.parameter") { sym("@variable.parameter") },
+    sym("@lsp.type.variable") { sym("@variable") },
+    sym("@lsp.type.property") { sym("@property") },
     sym("@lsp.type.enumMember") { fg = blue },
     -- sym("@lsp.type.event") { },  -- TODO: what is event property?
-    sym("@lsp.type.function") { fg = yellow },
-    sym("@lsp.type.method") { fg = yellow },
-    sym("@lsp.type.macro") { fg = dark_blue },
-    sym("@lsp.type.keyword") { fg = dark_blue },
-    sym("@lsp.type.modifier") { fg = dark_blue },
-    sym("@lsp.type.comment") { fg = green },
-    sym("@lsp.type.string") { fg = brown },
-    sym("@lsp.type.number") { fg = light_green },
-    sym("@lsp.type.regexp") { fg = dark_red },
-    sym("@lsp.type.operator") { fg = norm_fg },
-    sym("@lsp.type.decorator") { fg = yellow },
-    sym("@lsp.type.escapeSequence") { fg = yellow_orange },
+    sym("@lsp.type.function") { sym("@function") },
+    sym("@lsp.type.method") { sym("@function") },
+    sym("@lsp.type.macro") { sym("@constant.macro") },
+    sym("@lsp.type.keyword") { sym("@keyword") },
+    sym("@lsp.type.comment") { sym("@comment") },
+    sym("@lsp.type.string") { sym("@string") },
+    sym("@lsp.type.number") { sym("@number") },
+    sym("@lsp.type.regexp") { sym("@string.regexp") },
+    sym("@lsp.type.operator") { sym("@operator") },
+    sym("@lsp.type.decorator") { sym("@attribute") },
+    sym("@lsp.type.escapeSequence") { sym("@string.escape") },
     sym("@lsp.type.formatSpecifier") { fg = light_blue },
-    sym("@lsp.type.builtinType") { fg = dark_blue },
-    sym("@lsp.type.typeAlias") { fg = blue_green },
+    sym("@lsp.type.builtinType") { sym("@type.builtin") },
+    sym("@lsp.type.typeAlias") { sym("@type.definition") },
     sym("@lsp.type.unresolvedReference") { gui = 'undercurl', sp = error_red },
-    sym("@lsp.type.lifetime") { sym("@storageclass") },
+    sym("@lsp.type.lifetime") { sym("@keyword.storage") },
     sym("@lsp.type.generic") { sym("@variable") },
+    sym("@lsp.type.selfKeyword") { sym("@variable.builtin") },
     sym("@lsp.type.selfTypeKeyword") { sym("@variable.builtin") },
     sym("@lsp.type.deriveHelper") { sym("@attribute") },
-    sym("@lsp.typemod.type.defaultLibrary") { fg = blue_green },
-    sym("@lsp.typemod.typeAlias.defaultLibrary") { sym("@lsp.typemod.type.defaultLibrary") },
-    sym("@lsp.typemod.class.defaultLibrary") { fg = blue_green },
-    sym("@lsp.typemod.variable.defaultLibrary") { fg = dark_blue },
-    sym("@lsp.typemod.function.defaultLibrary") { Function },
-    sym("@lsp.typemod.method.defaultLibrary") { Function },
-    sym("@lsp.typemod.macro.defaultLibrary") { Function },
+    sym("@lsp.typemod.type.defaultLibrary") { sym("@type.builtin") },
+    sym("@lsp.typemod.typeAlias.defaultLibrary") { sym("@type.builtin") },
+    sym("@lsp.typemod.class.defaultLibrary") { sym("@type.builtin") },
+    sym("@lsp.typemod.variable.defaultLibrary") { sym("@variable.builtin") },
+    sym("@lsp.typemod.function.defaultLibrary") { sym("@function.builtin") },
+    sym("@lsp.typemod.method.defaultLibrary") { sym("@function.builtin") },
+    sym("@lsp.typemod.macro.defaultLibrary") { sym("@function.builtin") },
     sym("@lsp.typemod.struct.defaultLibrary") { sym("@type.builtin") },
-    -- sym("@lsp.typemod.enum.defaultLibrary") {},
-    -- sym("@lsp.typemod.enumMember.defaultLibrary") {},
+    sym("@lsp.typemod.enum.defaultLibrary") { sym("@type.builtin") },
+    sym("@lsp.typemod.enumMember.defaultLibrary") { sym("@constant.builtin") },
     sym("@lsp.typemod.variable.readonly") { fg = blue },
     sym("@lsp.typemod.variable.callable") { sym("@function") },
     sym("@lsp.typemod.variable.static") { sym("@constant") },
     sym("@lsp.typemod.property.readonly") { fg = blue },
-    sym("@lsp.typemod.keyword.async") { fg = dark_pink },
+    sym("@lsp.typemod.keyword.async") { sym("@keyword.coroutine") },
     sym("@lsp.typemod.keyword.injected") { sym("@keyword") },
     -- Set injected highlights. Mainly for Rust doc comments and also works for
     -- other lsps that inject tokens in comments.
     -- Ref: https://github.com/folke/tokyonight.nvim/pull/340
-    sym("@lsp.typemod.operator.injected") { sym("@lsp.type.operator") },
-    sym("@lsp.typemod.string.injected") { sym("@lsp.type.string") },
-    sym("@lsp.typemod.variable.injected") { sym("@lsp.type.variable") },
+    sym("@lsp.typemod.operator.injected") { sym("@operator") },
+    sym("@lsp.typemod.string.injected") { sym("@string") },
+    sym("@lsp.typemod.variable.injected") { sym("@variable") },
+
+    -- Language specific
+    -- Lua
+    sym("@lsp.type.property.lua") { sym("@variable.member.lua") },
 
     --
     -- nvim-lspconfig
